@@ -14,7 +14,7 @@ interface IProps {
  * Perspective library adds load to HTMLElement prototype.
  * This interface acts as a wrapper for Typescript compiler.
  */
-interface PerspectiveViewerElement {
+interface PerspectiveViewerElement extends HTMLElement {
   load: (table: Table) => void;
 }
 
@@ -32,7 +32,7 @@ class Graph extends Component<IProps, {}> {
 
   componentDidMount() {
     // Get element to attach the table from the DOM.
-    const elem: PerspectiveViewerElement = (document.getElementsByTagName(
+    const elem = (document.getElementsByTagName(
       "perspective-viewer"
     )[0] as unknown) as PerspectiveViewerElement;
 
@@ -48,6 +48,34 @@ class Graph extends Component<IProps, {}> {
     }
     if (this.table) {
       // Load the `table` in the `<perspective-viewer>` DOM reference.
+      // view property is to visulize the data, this will set the graph to y_line type
+      elem.setAttribute("view", "y_line");
+      // column-pivots will allow us to see the difference in two stocks with its value
+      elem.setAttribute("column-pivots", '["stock"]');
+
+      // row pivots will draw x-axis on the map with timestamp
+      elem.setAttribute("row-pivots", '["timestamp"]');
+      // allow us to focus on a particular part of stock on y-axis. for example we can draw top_ask_price on y-axis if this property is not set then it will show
+      // all of the properties of stock
+      elem.setAttribute("columns", '["top_ask_price"]');
+
+      /*
+        Aggregates allows us to handle the duplicated data we observed earlier and
+        consolidate it into a single data point. In our case we only want to consider a
+        data point unique if it has a unique stock name and timestamp. If there are
+        duplicates like what we had before, we want to average out the top_bid_prices
+        and the top_ask_prices of these ‘similar’ data points before treating them as
+        one
+      */
+      elem.setAttribute(
+        "aggregates",
+        `{
+        "stock" : "distinct count",
+        "top_ask_price":"avg",
+        "top_bid_price": "avg",
+        "timestamp":"distinct count"
+      }`
+      );
 
       // Add more Perspective configurations here.
       elem.load(this.table);

@@ -73,11 +73,13 @@ class App extends Component<{}, IState> {
    * Render the App react component
    */
   render() {
+    // this.getDataFromServer();
+
     return (
       <div className="App">
         <header className="App-header">Bank & Merge Co Task 2</header>
         <div className="App-content">
-          {/* <button
+          <button
             className="btn btn-primary Stream-button"
             // when button is click, our react app tries to request
             // new data from the server.
@@ -89,7 +91,7 @@ class App extends Component<{}, IState> {
             }}
           >
             Start Streaming Data
-          </button> */}
+          </button>
           <div className="Graph">{this.renderGraph()}</div>
         </div>
       </div>
